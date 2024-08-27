@@ -1,22 +1,21 @@
 #include <WiFiNINA.h>
 
-char ssid[] = "vivo"; // Your WiFi SSID
-char pass[] = "rakeshsingh"; // Your WiFi password
+char ssid[] = "vivo"; //WiFi SSID
+char pass[] = "rakeshsingh"; //WiFi password
 const char* webhookUrl = "/trigger/Sunlight/with/key/eWOeuigjkAgVhRWAI3SQ_4meFLCpv17LcbjMp9ZF-40"; // URL path for IFTTT
 
 WiFiClient client;
 
 // Pin connected to the LM393 digital output
-const int LIGHT_SENSOR_PIN = A5; // Adjust this pin according to your wiring
+const int LIGHT_SENSOR_PIN = A5;
 
 void setup() {
   Serial.begin(9600);
-  while (!Serial); // Wait for serial port to connect
-
-  // Initialize the light sensor pin
+  while (!Serial); 
+  // Initializes the light sensor pin
   pinMode(LIGHT_SENSOR_PIN, INPUT);
 
-  // Connect to WiFi
+  // Connects to WiFi
   WiFi.begin(ssid, pass);
   Serial.print("Connecting to WiFi");
   while (WiFi.status() != WL_CONNECTED) {
@@ -38,9 +37,9 @@ void loop() {
   // Read the light sensor value (HIGH or LOW)
   int lightValue = digitalRead(LIGHT_SENSOR_PIN);
   Serial.print("Light Sensor State (raw): ");
-  Serial.println(lightValue); // Print the raw value for debugging
+  Serial.println(lightValue); 
 
-  // Determine the correct state based on sensor output
+  
   if (lightValue == HIGH) {
     Serial.println("No light detected");
     sendIFTTTNotification("Sunlight stopped!");
@@ -48,17 +47,15 @@ void loop() {
     Serial.println("Light detected");
     sendIFTTTNotification("Sunlight detected on the terrarium!");
   }
-
-  // Wait before the next check
+  
   delay(60000);  // 60 seconds delay
 }
 
 
 void sendIFTTTNotification(String message) {
-  // Replace spaces with '+' for the query string
   message.replace(" ", "+");
 
-  // Connect to IFTTT and send an HTTP GET request
+  // Connects to IFTTT and sends an HTTP GET request
   if (client.connect("maker.ifttt.com", 80)) {
     Serial.println("Sending notification...");
     client.println("GET " + String(webhookUrl) + "?value1=" + message + " HTTP/1.1");
